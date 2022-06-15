@@ -457,29 +457,27 @@ fb_actions.remove = function(prompt_bufnr)
   local message = "Selections to be deleted: " .. table.concat(files, ", ")
   fb_utils.notify("actions.remove", { msg = message, level = "INFO", quiet = quiet })
   -- TODO fix default vim.ui.input and nvim-notify 'selections to be deleted' message
-  vim.ui.input({ prompt = "Remove selections [y/N]: " }, function(input)
-    vim.cmd [[ redraw ]] -- redraw to clear out vim.ui.prompt to avoid hit-enter prompt
-    if input and input:lower() == "y" then
-      for _, p in ipairs(selections) do
-        local is_dir = p:is_dir()
-        p:rm { recursive = is_dir }
-        -- clean up opened buffers
-        if not is_dir then
-          fb_utils.delete_buf(p:absolute())
-        else
-          fb_utils.delete_dir_buf(p:absolute())
-        end
-        table.insert(removed, p.filename:sub(#p:parent().filename + 2))
+
+  if vim.fn.confirm("Remove selections?", "&Yes\n&No", 2) == 1 then
+    for _, p in ipairs(selections) do
+      local is_dir = p:is_dir()
+      p:rm { recursive = is_dir }
+      -- clean up opened buffers
+      if not is_dir then
+        fb_utils.delete_buf(p:absolute())
+      else
+        fb_utils.delete_dir_buf(p:absolute())
       end
-      fb_utils.notify(
-        "actions.remove",
-        { msg = "Removed: " .. table.concat(removed, ", "), level = "INFO", quiet = quiet }
-      )
-      current_picker:refresh(current_picker.finder)
-    else
-      fb_utils.notify("actions.remove", { msg = "Removing selections aborted!", level = "INFO", quiet = quiet })
+      table.insert(removed, p.filename:sub(#p:parent().filename + 2))
     end
-  end)
+    fb_utils.notify(
+      "actions.remove",
+      { msg = "Removed: " .. table.concat(removed, ", "), level = "INFO", quiet = quiet }
+    )
+    current_picker:refresh(current_picker.finder)
+  else
+    fb_utils.notify("actions.remove", { msg = "Removing selections aborted!", level = "INFO", quiet = quiet })
+  end
 end
 
 --- Toggle hidden files or folders for |telescope-file-browser.picker.file_browser|.
