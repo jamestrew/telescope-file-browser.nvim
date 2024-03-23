@@ -2,6 +2,7 @@
 ---@config { ["module"] = "telescope-file-browser.actions" }
 
 ---@brief [[
+--- HELLO THERE
 --- The file browser actions are functions enable file system operations from within the file browser picker.
 --- In particular, the actions include creation, deletion, renaming, and moving of files and folders.
 ---
