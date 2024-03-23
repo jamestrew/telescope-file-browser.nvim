@@ -4,7 +4,15 @@ TS_DIR := deps/tree-sitter-lua
 PLENARY_DIR := deps/plenary.nvim
 TELESCOPE_DIR := deps/telescope.nvim
 
-docgen-deps:
+plenary-deps:
+	@mkdir -p deps
+	@if [ ! -d "$(PLENARY_DIR)" ]; then \
+		git clone --depth 1 https://github.com/nvim-lua/plenary.nvim $(PLENARY_DIR); \
+	else \
+		git -C "$(PLENARY_DIR)" pull; \
+	fi
+
+docgen-deps: plenary-deps
 	@mkdir -p deps
 	@if [ ! -d "$(TS_DIR)" ]; then \
 		git clone --depth 1 https://github.com/tjdevries/tree-sitter-lua $(TS_DIR); \
@@ -14,7 +22,7 @@ docgen-deps:
 	cd "$(TS_DIR)" && make dist
 
 
-test-deps:
+test-deps: plenary-deps
 	@mkdir -p deps
 	@if [ ! -d "$(PLENARY_DIR)" ]; then \
 		git clone --depth 1 https://github.com/nvim-lua/plenary.nvim $(PLENARY_DIR); \
