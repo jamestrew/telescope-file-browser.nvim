@@ -1,9 +1,8 @@
-local fb_git = require "telescope._extensions.file_browser.git"
-
-local iswin = vim.loop.os_uname().sysname == "Windows_NT"
+local git = require "telescope._extensions.file_browser.git"
+local utils = require "telescope._extensions.file_browser.utils"
 
 describe("parse_status_output unix", function()
-  if iswin then
+  if utils.iswin then
     return
   end
   local cwd = "/project/root/dir"
@@ -20,7 +19,7 @@ describe("parse_status_output unix", function()
       [cwd .. "/lua/telescope/_extensions/file_browser/finders.lua"] = " M",
       [cwd .. "/lua/tests/"] = "??",
     }
-    local actual = fb_git.parse_status_output(git_status, cwd)
+    local actual = git.parse_status_output(git_status, cwd)
     assert.are.same(expect, actual)
   end)
 
@@ -33,7 +32,7 @@ describe("parse_status_output unix", function()
       [cwd .. "/lua/telescope/_extensions/file_browser/finders.lua"] = " M",
       [cwd .. "/lua/tests/"] = "??",
     }
-    local actual = fb_git.parse_status_output(git_status, cwd)
+    local actual = git.parse_status_output(git_status, cwd)
     assert.are.same(expect, actual)
   end)
 
@@ -48,13 +47,13 @@ describe("parse_status_output unix", function()
       [cwd .. "/lua/telescope/_extensions/file_browser/fs_stat.lua"] = "C ",
       [cwd .. "/lua/telescope/_extensions/file_browser/make_entry.lua"] = " M",
     }
-    local actual = fb_git.parse_status_output(git_status, cwd)
+    local actual = git.parse_status_output(git_status, cwd)
     assert.are.same(expect, actual)
   end)
 end)
 
 describe("parse_status_output windows", function()
-  if not iswin then
+  if not utils.iswin then
     return
   end
   local cwd = "C:\\project\\root\\dir"
@@ -71,7 +70,7 @@ describe("parse_status_output windows", function()
       [cwd .. "\\lua\\telescope\\_extensions\\file_browser\\finders.lua"] = " M",
       [cwd .. "\\lua\\tests\\"] = "??",
     }
-    local actual = fb_git.parse_status_output(git_status, cwd)
+    local actual = git.parse_status_output(git_status, cwd)
     assert.are.same(expect, actual)
   end)
 
@@ -84,7 +83,7 @@ describe("parse_status_output windows", function()
       [cwd .. "\\lua\\telescope\\_extensions\\file_browser\\finders.lua"] = " M",
       [cwd .. "\\lua\\tests\\"] = "??",
     }
-    local actual = fb_git.parse_status_output(git_status, cwd)
+    local actual = git.parse_status_output(git_status, cwd)
     assert.are.same(expect, actual)
   end)
 
@@ -99,7 +98,7 @@ describe("parse_status_output windows", function()
       [cwd .. "\\lua\\telescope\\_extensions\\file_browser\\fs_stat.lua"] = "C ",
       [cwd .. "\\lua\\telescope\\_extensions\\file_browser\\make_entry.lua"] = " M",
     }
-    local actual = fb_git.parse_status_output(git_status, cwd)
+    local actual = git.parse_status_output(git_status, cwd)
     assert.are.same(expect, actual)
   end)
 end)
