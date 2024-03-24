@@ -182,9 +182,9 @@ fb_picker.file_browser({opts})  *telescope-file-browser.picker.file_browser()*
 ================================================================================
 ACTIONS                                         *telescope-file-browser.actions*
 
-HELLO THERE The file browser actions are functions enable file system
-operations from within the file browser picker. In particular, the actions
-include creation, deletion, renaming, and moving of files and folders.
+The file browser actions are functions enable file system operations from
+within the file browser picker. In particular, the actions include creation,
+deletion, renaming, and moving of files and folders.
 
 You can remap actions as follows:
 >

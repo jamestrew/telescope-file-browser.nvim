@@ -1,40 +1,31 @@
 .PHONY: docgen test clean
 
-TS_DIR := deps/tree-sitter-lua
-PLENARY_DIR := deps/plenary.nvim
-TELESCOPE_DIR := deps/telescope.nvim
+DEPS_DIR := deps
+TS_DIR := $(DEPS_DIR)/tree-sitter-lua
+PLENARY_DIR := $(DEPS_DIR)/plenary.nvim
+TELESCOPE_DIR := $(DEPS_DIR)/telescope.nvim
 
-plenary-deps:
-	@mkdir -p deps
-	@if [ ! -d "$(PLENARY_DIR)" ]; then \
-		git clone --depth 1 https://github.com/nvim-lua/plenary.nvim $(PLENARY_DIR); \
-	else \
-		git -C "$(PLENARY_DIR)" pull; \
-	fi
+define git_clone_or_pull
+@mkdir -p $(dir $1)
+@if [ ! -d "$1" ]; then \
+	git clone --depth 1 $2 $1; \
+else \
+	git -C "$1" pull; \
+fi
+endef
 
-docgen-deps: plenary-deps
-	@mkdir -p deps
-	@if [ ! -d "$(TS_DIR)" ]; then \
-		git clone --depth 1 https://github.com/tjdevries/tree-sitter-lua $(TS_DIR); \
-	else \
-		git -C "$(TS_DIR)" pull; \
-	fi
+$(DEPS_DIR):
+	@mkdir -p $@
+
+plenary: | $(DEPS_DIR)
+	$(call git_clone_or_pull,$(PLENARY_DIR),https://github.com/nvim-lua/plenary.nvim)
+
+docgen-deps: plenary | $(DEPS_DIR)
+	$(call git_clone_or_pull,$(TS_DIR),https://github.com/tjdevries/tree-sitter-lua)
 	cd "$(TS_DIR)" && make dist
 
-
-test-deps: plenary-deps
-	@mkdir -p deps
-	@if [ ! -d "$(PLENARY_DIR)" ]; then \
-		git clone --depth 1 https://github.com/nvim-lua/plenary.nvim $(PLENARY_DIR); \
-	else \
-		git -C "$(PLENARY_DIR)" pull; \
-	fi
-
-	@if [ ! -d "$(TELESCOPE_DIR)" ]; then \
-		git clone --depth 1 https://github.com/nvim-telescope/telescope.nvim $(TELESCOPE_DIR); \
-	else \
-		git -C "$(TELESCOPE_DIR)" pull; \
-	fi
+test-deps: plenary | $(DEPS_DIR)
+	$(call git_clone_or_pull,$(TELESCOPE_DIR),https://github.com/nvim-telescope/telescope.nvim)
 
 docgen: docgen-deps
 	nvim --headless --noplugin -u scripts/minimal_init.vim -c "luafile ./scripts/gendocs.lua" -c 'qa'
@@ -43,4 +34,4 @@ test: test-deps
 	nvim --headless --noplugin -u scripts/minimal_init.vim -c "PlenaryBustedDirectory lua/tests/ { minimal_init = './scripts/minimal_init.vim' }"
 
 clean:
-	rm -rf deps
+	@rm -rf $(DEPS_DIR)
